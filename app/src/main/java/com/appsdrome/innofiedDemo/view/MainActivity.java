@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView userRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     ConnectionDetector connectionDetector;
-    //private int mCurrentPage=1;
-    //private int mTotalPage;
     ProgressBar progressBar;
     RecyclerView.LayoutManager layoutManager;
     private int page_number=1;
@@ -63,6 +61,22 @@ public class MainActivity extends AppCompatActivity {
             getUsers();
         }
 
+        swipeRefreshLayout=findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                isLoading=false;
+                page_number=1;
+                pastVisibleItems=0;
+                visibleItemCount=0;
+                TotalItemCount = 0;
+                previousTotal=0;
+                getUsers();
+
+            }
+        });
 
         userRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -91,17 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        swipeRefreshLayout=findViewById(R.id.swipe_layout);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
 
-                page_number=1;
-                getUsers();
-
-            }
-        });
     }
 
     private void getUsers() {
@@ -135,23 +139,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ShowData() {
-
-        usersAdapter = new UsersAdapter(results,this);
-        userRecyclerView.setAdapter(usersAdapter);
-        usersAdapter.notifyDataSetChanged();
-
-    }
-
-    private boolean isLastItemDisplaying(RecyclerView recyclerView) {
-        if (Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() != 0) {
-            int lastVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findLastVisibleItemPosition();
-            if (lastVisibleItemPosition != RecyclerView.NO_POSITION && lastVisibleItemPosition == recyclerView.getAdapter().getItemCount() - 1)
-                return true;
-        }
-        return false;
-    }
-
     private void pagination(){
         progressBar.setVisibility(View.VISIBLE);
         Call<Post> call = getUserPostServiceData.getResults(page_number, item_count);
@@ -165,9 +152,10 @@ public class MainActivity extends AppCompatActivity {
                 if(results!= null && !results.isEmpty()){
                 usersAdapter.AddUser(results);
 
-                    Toast.makeText(MainActivity.this, "page_no"+page_number+"is loading", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "page_no "+page_number+" is loading", Toast.LENGTH_SHORT).show();
 
                 }else{
+
                     Toast.makeText(MainActivity.this, "No more User Available", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 }
