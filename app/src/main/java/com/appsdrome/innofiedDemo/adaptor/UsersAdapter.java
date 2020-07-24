@@ -17,6 +17,7 @@ import com.appsdrome.innofiedDemo.model.Data;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.CountryViewHolder>{
 
@@ -71,5 +72,12 @@ Context context;
                 lastName=itemView.findViewById(R.id.tv_last_name);
                 userImg = itemView.findViewById(R.id.img_view);
             }
+        }
+
+        public void AddUser(List<Data> user){
+            for(Data data : user){
+                userList.add(data);
+            }
+            notifyDataSetChanged();
         }
 }
